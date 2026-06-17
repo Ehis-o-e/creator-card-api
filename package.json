@@ -9,6 +9,8 @@
     "url": "profold-be-api-1"
   },
   "scripts": {
+    "dev": "nodemon bootstrap.js",
+    "start": "nodemon bootstrap.js",
     "test": "set USE_MOCK_MODEL=1 && mocha --recursive --require dotenv/config",
     "prepare": "husky",
     "commitlint": "commitlint --edit",
@@ -53,6 +55,7 @@
     "joi": "^17.12.2",
     "jsonwebtoken": "^9.0.2",
     "knex": "^3.1.0",
+    "mongodb": "^7.3.0",
     "mongoose": "^8.2.0",
     "mysql2": "^3.9.1",
     "pino": "^8.19.0",
@@ -78,6 +81,7 @@
     "husky": "^9.0.11",
     "mocha": "^10.5.1",
     "node-mocks-http": "^1.14.1",
+    "nodemon": "^3.1.14",
     "prettier": "^3.3.2"
   }
 }

@@ -3,27 +3,19 @@
 if (!process.env.__ALREADY_BOOTSTRAPPED_ENVS) require('dotenv').config();
 
 const fs = require('fs');
+const { appLogger } = require('@app-core/logger');
 const { createServer } = require('@app-core/server');
 const { createConnection } = require('@app-core/mongoose');
 const { createQueue } = require('@app-core/queue');
 
 const canLogEndpointInformation = process.env.CAN_LOG_ENDPOINT_INFORMATION;
 
-createConnection({
-  uri: process.env.MONGODB_URI,
-});
-
-createQueue();
-
-const server = createServer({
-  port: process.env.PORT,
-  JSONLimit: '150mb',
-  enableCors: true,
-});
-
 const ENDPOINT_CONFIGS = [
   {
     path: './endpoints/onboarding/',
+  },
+  {
+    path: './endpoints/creator-cards/',
   },
 ];
 
@@ -64,11 +56,7 @@ function logEndpointMetaData(endpointConfigs) {
   });
 }
 
-if (canLogEndpointInformation) {
-  logEndpointMetaData(ENDPOINT_CONFIGS);
-}
-
-function setupEndpointHandlers(basePath, options = {}) {
+function setupEndpointHandlers(basePath, server, options = {}) {
   const dirs = fs.readdirSync(basePath);
 
   dirs.forEach((file) => {
@@ -82,8 +70,42 @@ function setupEndpointHandlers(basePath, options = {}) {
   });
 }
 
-ENDPOINT_CONFIGS.forEach((config) => {
-  setupEndpointHandlers(config.path, config.options);
-});
+async function bootstrap() {
+  try {
+    const { connection } = await createConnection({
+      uri: process.env.MONGODB_URI,
+    });
 
-server.startServer();
+    appLogger.info(
+      {
+        host: connection.host,
+        port: connection.port,
+        database: connection.db?.databaseName,
+      },
+      'mongodb-connected'
+    );
+
+    createQueue();
+
+    const server = createServer({
+      port: process.env.PORT,
+      JSONLimit: '150mb',
+      enableCors: true,
+    });
+
+    if (canLogEndpointInformation) {
+      logEndpointMetaData(ENDPOINT_CONFIGS);
+    }
+
+    ENDPOINT_CONFIGS.forEach((config) => {
+      setupEndpointHandlers(config.path, server, config.options);
+    });
+
+    server.startServer();
+  } catch (error) {
+    appLogger.errorX(error, 'mongodb-connection-failed');
+    process.exit(1);
+  }
+}
+
+bootstrap();

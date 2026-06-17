@@ -28,10 +28,13 @@ async function createConnection(connectionConfig) {
     try {
       let connection;
       if (isNotDefault) {
-        connection = await mongoose.createConnection(uri, connectionOptions);
+        connection = mongoose.createConnection(uri, connectionOptions);
+        await connection.asPromise();
       } else {
         ({ connection } = await mongoose.connect(uri, connectionOptions));
       }
+
+      await connection.db.admin().ping();
       connectionResult.connection = connection;
     } catch (e) {
       // Todo: Proper handler?

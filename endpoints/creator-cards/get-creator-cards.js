@@ -1,0 +1,25 @@
+const { createHandler } = require('@app-core/server');
+const { appLogger } = require('@app-core/logger');
+const getCreatorCard = require('../../services/creator-cards/get-creator-cards');
+
+module.exports = createHandler({
+  path: '/creator-cards/:slug',
+  method: 'get',
+  async onResponseEnd(rc, rs) {
+    appLogger.info({ requestContext: rc, response: rs }, 'delete-creator-card-request-completed');
+  },
+  async handler(rc, helpers) {
+    const payload = {
+      slug: rc.params.slug,
+      access_code: rc.query.access_code,
+    };
+
+    const data = await getCreatorCard(payload);
+
+    return {
+      status: helpers.http_statuses.HTTP_200_OK,
+      message: 'Creator Card Retrieved Successfully.',
+      data,
+    };
+  },
+});
