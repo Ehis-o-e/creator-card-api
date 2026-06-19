@@ -2,9 +2,9 @@ const { appLogger } = require('@app-core/logger');
 const validator = require('@app-core/validator');
 const { throwAppError, ERROR_CODE } = require('@app-core/errors');
 const { CreatorCardMessages } = require('../../messages');
-const CreatorCard = require('../../repository/creator-card.js/get-creator-cards');
+const CreatorCard = require('../../repository/creator-card/index');
 
-// specs require for retrieving data
+// specs required for retrieving data
 const getCreatorCardspec = `root {
   slug string<trim|minLength:5|maxLength:50>
   access_code? string<trim>
@@ -12,7 +12,8 @@ const getCreatorCardspec = `root {
 
 const parsedGetSpecs = validator.parse(getCreatorCardspec);
 
-async function getCreatorCard(serviceData) {
+async function getCreatorCard(serviceData, option = {}) {
+  // validate incoming date
   const data = validator.validate(serviceData, parsedGetSpecs);
 
   let result;
@@ -27,12 +28,12 @@ async function getCreatorCard(serviceData) {
     });
 
     if (!card) {
-      throwAppError(CreatorCardMessages.NOT_FOUND, ERROR_CODE.NOTFOUND);
+      throwAppError(CreatorCardMessages.NOT_FOUND, 'NF01');
     }
 
     // draft should not be retrieve
     if (card.status === 'draft') {
-      throwAppError(CreatorCardMessages.DRAFT_NOT_RETRIEVABLE, ERROR_CODE.NOTFOUND);
+      throwAppError(CreatorCardMessages.DRAFT_NOT_FOUND, 'NF02');
     }
 
     // for private, check access code
