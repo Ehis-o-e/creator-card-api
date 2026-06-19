@@ -10,7 +10,8 @@
   },
   "scripts": {
     "dev": "nodemon bootstrap.js",
-    "start": "nodemon bootstrap.js",
+    "start": "node bootstrap.js",
+    "build": "node -e \"console.log('Build complete')\"",
     "test": "set USE_MOCK_MODEL=1 && mocha --recursive --require dotenv/config",
     "prepare": "husky",
     "commitlint": "commitlint --edit",
