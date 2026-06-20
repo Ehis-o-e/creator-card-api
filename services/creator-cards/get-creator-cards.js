@@ -1,8 +1,8 @@
 const { appLogger } = require('@app-core/logger');
 const validator = require('@app-core/validator');
 const { throwAppError, ERROR_CODE } = require('@app-core/errors');
-const { CreatorCardMessages } = require('../../messages');
-const CreatorCard = require('../../repository/creator-card/index');
+const { CreatorCardMessages } = require('@app/messages');
+const CreatorCard = require('@app/repository/creator-card/index');
 
 // specs required for retrieving data
 const getCreatorCardspec = `root {
@@ -40,11 +40,11 @@ async function getCreatorCard(serviceData, option = {}) {
     if (card.access_type === 'private') {
       // Check if there is an access cide
       if (!data.access_code) {
-        throwAppError(CreatorCardMessages.ACCESS_CODE_REQUIRED, ERROR_CODE.AUTHERR);
+        throwAppError(CreatorCardMessages.ACCESS_CODE_REQUIRED, 'AC03');
       }
       // Check if the access code is correct
       if (data.access_code !== card.access_code) {
-        throwAppError(CreatorCardMessages.INVALID_ACCESS_CODE, ERROR_CODE.AUTHERR);
+        throwAppError(CreatorCardMessages.INVALID_ACCESS_CODE, 'AC04');
       }
     }
 

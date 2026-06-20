@@ -1,8 +1,8 @@
 const { throwAppError, ERROR_CODE } = require('@app-core/errors');
 const { appLogger } = require('@app-core/logger');
 const validator = require('@app-core/validator');
-const { CreatorCardMessages } = require('../../messages');
-const CreatorCard = require('../../repository/creator-card/index');
+const { CreatorCardMessages } = require('@app/messages');
+const CreatorCard = require('@app/repository/creator-card/index');
 
 // Spec for Creating Creator-Card
 const createCreatorCardSpec = `root {
