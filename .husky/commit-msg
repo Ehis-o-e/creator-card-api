@@ -1,1 +1,1 @@
-npx lint-staged --no-stash
+pnpm run commitlint ${1} 
